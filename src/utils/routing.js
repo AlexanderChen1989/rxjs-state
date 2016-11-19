@@ -1,12 +1,12 @@
 import React, {Component} from 'react'
 import routeParser from 'route-parser'
 import urlParser from 'url-parse'
-import { actions } from '../actions'
+import { Actions } from '../actions'
 import { dispatch } from '../actions'
 
 export function changeRoute(route) {
   const url = urlParser(route)
-  dispatch(actions.ROUTE_CHANGED, {path: url.pathname, query: url.query  })
+  dispatch(Actions.ROUTE_CHANGED, {path: url.pathname, query: url.query  })
 }
 
 export default function match (routes, component) {

@@ -1,6 +1,6 @@
 import {Observable} from '@reactivex/rxjs'
 import getPayload from './dispatcher'
-import {actions, dispatch} from './actions'
+import {Actions, dispatch} from './actions'
 import {add} from 'ramda'
 import combineLatestObj from './utils/combineLatestObj'
 
@@ -13,7 +13,7 @@ const extractRouteAsURL = (route) => {
 
 /* ========================== state ========================================= */
 const route =
-  getPayload(actions.ROUTE_CHANGED)
+  getPayload(Actions.ROUTE_CHANGED)
     .map(extractRouteAsURL)
     .startWith('')
 
@@ -22,10 +22,10 @@ const route =
 /* ========================== state ========================================= */
 
 const increase =
-  getPayload(actions.COUNTER_INCREASED)
+  getPayload(Actions.COUNTER_INCREASED)
 
 const decrease =
-  getPayload(actions.COUNTER_DECREASED)
+  getPayload(Actions.COUNTER_DECREASED)
     .map(num => -num)
 
 export const count =
@@ -38,12 +38,12 @@ export const count =
 
 export const increaseCount =
   Observable.of((num) => {
-    dispatch(actions.COUNTER_INCREASED, num)
+    dispatch(Actions.COUNTER_INCREASED, num)
   })
 
 export const decreaseCount =
   Observable.of((num) => {
-    dispatch(actions.COUNTER_DECREASED, num)
+    dispatch(Actions.COUNTER_DECREASED, num)
   })
 
 /* ======================== all together ==================================== */

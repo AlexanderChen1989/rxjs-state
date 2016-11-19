@@ -1,5 +1,5 @@
 import { Subject } from '@reactivex/rxjs'
-import { actions } from './actions'
+import { Actions } from './actions'
 
 const _dispatcher = new Subject()
 
@@ -13,17 +13,17 @@ const dispatcher =
 export const DONT_USE_UNLESS_YOUR_NAME_IS_ACTION_CREATOR = _dispatcher
 
 function buildFilterFunction (args) {
-  // Check if has actions
+  // Check if has Actions
   const hasActions =
     Object.keys(args)
-      .some(key => Object.keys(actions).indexOf(args[key]) !== -1)
+      .some(key => Object.keys(Actions).indexOf(args[key]) !== -1)
 
   if (!hasActions) {
     throw new Error('Invalid filters provided to dispatcher func')
   }
 
   return (message) => {
-    // If filter args have actions to filter by them
+    // If filter args have Actions to filter by them
     return (
       Object.keys(args)
         .some(key => args[key] === message.type)
@@ -31,8 +31,8 @@ function buildFilterFunction (args) {
   }
 }
 
-// Dispatch full actions (including data)
-// We either get a predicate, or a list of actions
+// Dispatch full Actions (including data)
+// We either get a predicate, or a list of Actions
 export function getAction (...args) {
   let filteredDispatcher
 
@@ -43,8 +43,8 @@ export function getAction (...args) {
       dispatcher
         .filter(args[0])
   } else {
-    // Sugaring for filtering by actions
-    // arguments's values are the actions we would like to filter by
+    // Sugaring for filtering by Actions
+    // arguments's values are the Actions we would like to filter by
     filteredDispatcher =
       dispatcher
         .filter(buildFilterFunction(args))
@@ -54,7 +54,7 @@ export function getAction (...args) {
   return filteredDispatcher
 }
 
-// Dispatch only the data from the actions
+// Dispatch only the data from the Actions
 export default function getPayload (...args) {
   // We usually only need the data prop, so pluck it by
   // default
