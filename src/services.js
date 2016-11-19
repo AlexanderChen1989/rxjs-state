@@ -1,6 +1,6 @@
 import { Observable } from '@reactivex/rxjs'
 import { createHistory, useQueries } from 'history'
-import { Actions, dispatch } from './actions'
+import { actions, dispatch } from './actions'
 import getPayload from './dispatcher'
 import {getAction} from './dispatcher'
 
@@ -18,7 +18,7 @@ const checkIfDifferentLocation = (location, route) => {
 }
 
 const pushHistory =
-  getPayload(Actions.ROUTE_CHANGED)
+  getPayload(actions.ROUTE_CHANGED)
     .do(route => {
       const currentLocation = history.getCurrentLocation()
       if (route.path !== currentLocation.pathname &&
@@ -31,11 +31,11 @@ const pushHistory =
 const notifyHistoryChange =
   Observable.fromEventPattern(history.listen)
     .merge(Observable.of(history.getCurrentLocation())) // for initial load
-    .withLatestFrom(getPayload(Actions.ROUTE_CHANGED)
+    .withLatestFrom(getPayload(actions.ROUTE_CHANGED)
       .startWith(null), combineLocations)
     .filter(checkIfDifferentLocation)
     .do(({location, route}) => {
-      dispatch(Actions.ROUTE_CHANGED, {path: location.pathname,
+      dispatch(actions.ROUTE_CHANGED, {path: location.pathname,
         query: location.query,
         search: location.search})
     })

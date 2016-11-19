@@ -1,5 +1,5 @@
 import { Subject } from '@reactivex/rxjs'
-import { Actions } from './actions'
+import { actions } from './actions'
 
 const _dispatcher = new Subject()
 
@@ -16,7 +16,7 @@ function buildFilterFunction (args) {
   // Check if has actions
   const hasActions =
     Object.keys(args)
-      .some(key => Object.keys(Actions).indexOf(args[key]) !== -1)
+      .some(key => Object.keys(actions).indexOf(args[key]) !== -1)
 
   if (!hasActions) {
     throw new Error('Invalid filters provided to dispatcher func')
