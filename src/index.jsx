@@ -1,81 +1,67 @@
 import React from 'react'
 import {render} from 'react-dom'
-import { Observable } from '@reactivex/rxjs'
+import {Observable} from '@reactivex/rxjs'
 
-import match, {changeRoute} from './utils/routing'
 import services from './services'
-import stores from './stores'
-import {counterStore, routerStore} from './stores'
+import combineLatestObj from './utils/combineLatestObj'
+import {count, increaseCount, decreaseCount} from './stores'
 
 
-class Hello extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {count: 1}
+const observer = (store) => (WrappedComponent) => {
+  return class InnerComponent extends React.Component {
+    constructor(props) {
+      super(props)
+      this.state = null
+    }
+
+    componentDidMount() {
+      this.subscribe = store.subscribe(this.onNext.bind(this))
+    }
+
+    componentWillUnmount() {
+      if (this.subscribe) {
+        this.subscribe.unsubscribe()
+      }
+    }
+
+    onNext(state) {
+      if (!this.state || this.state !== state) {
+        this.setState(state)
+      }
+    }
+
+    render() {
+      if (this.state) {
+        return <WrappedComponent {...this.state} />
+      }
+      return null
+    }
   }
+}
 
-  incr() {
-    this.setState({count: this.state.count + 1})
-  }
-
+@observer(combineLatestObj({count, increaseCount, decreaseCount}))
+class Counter extends React.Component {
   render() {
-    const {count} = this.state
-    const {name} = this.props
+    const {count, increaseCount, decreaseCount} = this.props
     return (
       <div>
         <h1>{count}</h1>
-        <button onClick={() => this.incr()}>Add</button>
+        <button onClick={() => increaseCount(10)}>+</button>
+        <button onClick={() => decreaseCount(10)}>-</button>
       </div>
     )
   }
 }
 
 
-class App extends React.Component {
-  static childContextTypes = {
-    route: React.PropTypes.string
-  }
-
-  getChildContext() {
-    return {route: this.props.routerStore.route};
-  }
-
-  render() {
-    const {counterStore: {count, increaseCount, decreaseCount}} = this.props
-    return (
-      <div>
-        <h1>{count}</h1>
-        <button onClick={() =>increaseCount(10)}>+</button>
-        <button onClick={() =>decreaseCount(10)}>-</button>
-        <br/>
-        <button onClick={() => changeRoute('/about') }>About</button>
-        <button onClick={() => changeRoute('/ok') }>Ok</button>
-        <br />
-
-        { match('/about', <h1>About</h1>) }
-        { match('/ok', <h1>Ok</h1>) }
-      </div>
-    )
-  }
-}
-
-App.contextTypes = {
-  route: React.PropTypes.string
-};
-
-services.subscribe(() => {})
-
-stores.subscribe(state => {
-  render(
-    <App {...state} />,
-    document.getElementById('app')
-  )
+services.subscribe(() => {
 })
 
-Observable
-  .combineLatest(counterStore, routerStore, (c, r) => {
-    return Object.assign({}, c, r)
-  })
-  .subscribe((state) => console.log(state))
 
-
+render(
+  <div>
+    <Counter />
+    <h1>Hello</h1>
+  </div>,
+  document.getElementById('app')
+)
