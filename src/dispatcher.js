@@ -1,5 +1,5 @@
 import { Subject } from '@reactivex/rxjs'
-import { Actions } from '../actions'
+import { Actions } from './actions'
 
 const _dispatcher = new Subject()
 

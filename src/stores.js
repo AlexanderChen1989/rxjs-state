@@ -1,8 +1,23 @@
 import {Observable} from '@reactivex/rxjs'
-import getPayload from '../dispatcher'
-import {Actions, dispatch} from '../actions'
+import getPayload from './dispatcher'
+import {Actions, dispatch} from './actions'
 import {add} from 'ramda'
-import combineLatestObj from '../utils/combineLatestObj'
+import combineLatestObj from './utils/combineLatestObj'
+
+
+/* ========================== helpers ========================================= */
+
+const extractRouteAsURL = (route) => {
+  return route.path + (route.search || '')
+}
+
+/* ========================== state ========================================= */
+const route =
+  getPayload(Actions.ROUTE_CHANGED)
+    .map(extractRouteAsURL)
+    .startWith('')
+
+
 
 /* ========================== state ========================================= */
 
@@ -33,6 +48,6 @@ export const decreaseCount =
 
 /* ======================== all together ==================================== */
 
-export default
-Observable
-  .combineLatestObj({count, increaseCount, decreaseCount})
+export const counterStore = combineLatestObj({count, increaseCount, decreaseCount})
+export const routerStore=  combineLatestObj({route})
+export default combineLatestObj({counterStore, routerStore})

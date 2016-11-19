@@ -1,8 +1,11 @@
 import React from 'react'
 import {render} from 'react-dom'
+import { Observable } from '@reactivex/rxjs'
+
 import match, {changeRoute} from './utils/routing'
 import services from './services'
 import stores from './stores'
+import {counterStore, routerStore} from './stores'
 
 
 class Hello extends React.Component {
@@ -18,7 +21,6 @@ class Hello extends React.Component {
   render() {
     const {count} = this.state
     const {name} = this.props
-    console.log(`Hello, ${name}!`)
     return (
       <div>
         <h1>{count}</h1>
@@ -35,19 +37,23 @@ class App extends React.Component {
   }
 
   getChildContext() {
-    return {route: this.props.route};
+    return {route: this.props.routerStore.route};
   }
 
   render() {
+    const {counterStore: {count, increaseCount, decreaseCount}} = this.props
     return (
       <div>
-        <h1>Hello</h1>
-        <Hello name="Hello1"/>
-        <Hello name="Hello2"/>
-        <button onClick={() => changeRoute('/about') }>
-          About
-        </button>
+        <h1>{count}</h1>
+        <button onClick={() =>increaseCount(10)}>+</button>
+        <button onClick={() =>decreaseCount(10)}>-</button>
+        <br/>
+        <button onClick={() => changeRoute('/about') }>About</button>
+        <button onClick={() => changeRoute('/ok') }>Ok</button>
+        <br />
+
         { match('/about', <h1>About</h1>) }
+        { match('/ok', <h1>Ok</h1>) }
       </div>
     )
   }
@@ -57,13 +63,19 @@ App.contextTypes = {
   route: React.PropTypes.string
 };
 
-services.subscribe(() => {
-})
+services.subscribe(() => {})
+
 stores.subscribe(state => {
   render(
     <App {...state} />,
     document.getElementById('app')
   )
 })
+
+Observable
+  .combineLatest(counterStore, routerStore, (c, r) => {
+    return Object.assign({}, c, r)
+  })
+  .subscribe((state) => console.log(state))
 
 
