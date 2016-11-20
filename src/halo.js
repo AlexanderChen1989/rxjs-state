@@ -15,7 +15,7 @@ export function combineLatestObj(obj) {
   })
 }
 
-export default class Dispatcher {
+export class Dispatcher {
   constructor() {
     this._dispatcher = new Subject()
     this._actionsStream = this._dispatcher.asObservable().publishReplay(1).refCount()
