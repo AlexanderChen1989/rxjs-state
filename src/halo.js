@@ -1,8 +1,21 @@
-import React from 'react'
-import ReadDOM from 'react-dom'
 import {Observable, Subject} from '@reactivex/rxjs'
 
-class Dispatcher {
+export function combineLatestObj(obj) {
+  let observables = []
+  const keys = Object.keys(obj)
+
+  keys.forEach((key) => {
+    observables.push(obj[key])
+  })
+
+  return Observable.combineLatest(observables, (...args) => {
+    return args.reduce((output, current, i) => {
+      return Object.assign(output, {[keys[i]]: current})
+    }, {})
+  })
+}
+
+export default class Dispatcher {
   constructor() {
     this._dispatcher = new Subject()
     this._actionsStream = this._dispatcher.asObservable().publishReplay(1).refCount()
@@ -68,34 +81,6 @@ class Dispatcher {
   filterData(...args) {
     return this.filterAction(...args).pluck('data')
   }
-
-  combineLatestObj(obj) {
-    let observables = []
-    const keys = Object.keys(obj)
-
-    keys.forEach((key) => {
-      observables.push(obj[key])
-    })
-
-    return Observable.combineLatest(observables, (...args) => {
-      return args.reduce((output, current, i) => {
-        return Object.assign(output, {[keys[i]]: current})
-      }, {})
-    })
-  }
 }
 
-const dispatcher = new Dispatcher()
 
-const actions = dispatcher.actions({
-  HELLO: null,
-  WORLD: null,
-})
-
-dispatcher.filterAction(actions.HELLO, actions.WORLD)
-
-
-ReadDOM.render(
-  <h1>hello</h1>,
-  document.getElementById('app')
-)
