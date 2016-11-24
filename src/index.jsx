@@ -1,18 +1,12 @@
-import React from 'react'
-import ReadDOM from 'react-dom'
-import {Observable, Subject} from '@reactivex/rxjs'
-import {Dispatcher, combineLatesObj} from './halo'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Counter from './hello/Counter';
+import logger from './hello/logger';
 
-const {actions, filterAction} = new Dispatcher()
+logger.subscribe(() => {});
 
-const Actions = actions({
-  ROUTE_CHANGED: null, // {path: string, query: string}
-  COUNTER_INCREASED: null,
-  COUNTER_DECREASED: null,
-})
-
-
-ReadDOM.render(
-  <h1>hello</h1>,
+ReactDOM.render(
+  <Counter />,
   document.getElementById('app')
-)
+);
+

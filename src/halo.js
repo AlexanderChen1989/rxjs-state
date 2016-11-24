@@ -1,6 +1,7 @@
+import React from 'react'
 import {Observable, Subject} from '@reactivex/rxjs'
 
-export function combineLatestObj(obj) {
+export const combineLatestObj = (obj) => {
   let observables = []
   const keys = Object.keys(obj)
 
@@ -15,6 +16,50 @@ export function combineLatestObj(obj) {
   })
 }
 
+export const observer = (store) => (WrappedComponent) => {
+  return class InnerComponent extends React.Component {
+    constructor(props) {
+      super(props)
+      this.state = null
+    }
+
+    componentDidMount() {
+      this.subscribe = store.subscribe(
+        this.onNext.bind(this),
+        this.onComplete.bind(this),
+        this.onError.bind(this),
+      )
+    }
+
+    componentWillUnmount() {
+      if (this.subscribe) {
+        this.subscribe.unsubscribe()
+      }
+    }
+
+    onNext(state) {
+      if (!this.state || this.state !== state) {
+        this.setState(state)
+      }
+    }
+
+    onComplete() {
+      console.log("completed")
+    }
+
+    onError(err) {
+      console.log(err)
+    }
+
+    render() {
+      if (this.state) {
+        return <WrappedComponent {...this.state} />
+      }
+      return null
+    }
+  }
+}
+
 export class Dispatcher {
   constructor() {
     this._dispatcher = new Subject()
@@ -27,10 +72,14 @@ export class Dispatcher {
     this.filterData = this.filterData.bind(this)
   }
 
+  get actionsStream() {
+    return this._actionsStream
+  }
+
   dispatch(type, data = null) {
     if (!this._actions.hasOwnProperty(type)) {
-      throw new Error(`Tried to dispatch an unknown action. 
-                     Action type: ${type}. 
+      throw new Error(`Tried to dispatch an unknown action.
+                     Action type: ${type}.
                      Please make sure actions you use are in the
                      list of known actions.`)
     }
@@ -73,7 +122,7 @@ export class Dispatcher {
       }
     }
 
-    this._actionsStream.filter((message) => {
+    return this._actionsStream.filter((message) => {
       return actions.indexOf(message.type) !== -1
     })
   }
