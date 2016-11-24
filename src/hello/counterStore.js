@@ -15,7 +15,7 @@ const decrease =
   filterData(Actions.DECR)
     .map(num => -num)
 
-export const count =
+ const count =
   Observable
     .merge(increase, decrease)
     .scan((acc, item) => acc + item)
