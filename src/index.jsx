@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Counter from './hello/Counter';
-import logger from './hello/logger';
+import Counter from './counter/Counter';
+import logger from './counter/logger';
 
 logger.subscribe(() => {});
 
