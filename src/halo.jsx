@@ -1,7 +1,7 @@
 import React from 'react'
 import {Observable, Subject} from '@reactivex/rxjs'
 
-export const combineLatestObj = (obj) => {
+export const combine = (obj) => {
   let observables = []
   const keys = Object.keys(obj)
 
@@ -17,6 +17,7 @@ export const combineLatestObj = (obj) => {
 }
 
 export const observer = (store) => (WrappedComponent) => {
+  store = combine(store)
   return class InnerComponent extends React.Component {
     constructor(props) {
       super(props)
@@ -67,7 +68,7 @@ export class Dispatcher {
     this._actions = {}
 
     this.dispatch = this.dispatch.bind(this)
-    this.actions = this.actions.bind(this)
+    this.defineAction = this.defineAction.bind(this)
     this.filterAction = this.filterAction.bind(this)
     this.filterData = this.filterData.bind(this)
   }
@@ -87,17 +88,11 @@ export class Dispatcher {
     this._dispatcher.next({type, data})
   }
 
-  actions(obj) {
-    var key
-    var actions = {}
-
-    if (obj && typeof obj === 'object') {
-      for (key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          actions[key] = key;
-        }
-      }
-    }
+  defineAction(...actions) {
+    actions = actions.reduce((acc, a) => {
+      acc[a] = a;
+      return acc
+    }, {});
 
     this._actions = Object.assign({}, this._actions, actions)
     return this._actions;
@@ -105,7 +100,7 @@ export class Dispatcher {
 
 
   filterAction(...actions) {
-    // filter all actions
+    // filter all defineAction
     if (actions.length === 0) {
       return this._actionsStream
     }
@@ -115,7 +110,7 @@ export class Dispatcher {
       return this._actionsStream.filter(actions[0])
     }
 
-    // filter actions based on actions user provided
+    // filter defineAction based on defineAction user provided
     for (var i = 0; i < actions.length; i++) {
       if (!(this._actions.hasOwnProperty(actions[i]))) {
         throw new Error('Invalid filters provided to dispatcher func')

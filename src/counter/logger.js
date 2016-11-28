@@ -1,4 +1,4 @@
-import (default as {actionsStream}) from './dispatcher';
+import dispatcher from './dispatcher';
 
 const {actionsStream} = dispatcher;
 

@@ -1,11 +1,9 @@
 import React from 'react';
 
-import {observer, combineLatestObj} from '../halo';
+import {observer} from '../halo';
 import {count, decreaseCount, increaseCount} from './counterStore';
 
-const store = combineLatestObj({count, decreaseCount, increaseCount});
-
-@observer(store)
+@observer({count, decreaseCount, increaseCount})
 export default class Counter extends React.Component {
   render() {
     const {count, increaseCount, decreaseCount} = this.props;

@@ -1,12 +1,12 @@
 import {Observable} from '@reactivex/rxjs';
 import dispatcher from './dispatcher';
 
-const {dispatch, actions, filterAction, filterData} = dispatcher;
+const {dispatch, defineAction, filterAction, filterData} = dispatcher;
 
-export const Actions = actions({
-  INCR: null,
-  DECR: null
-})
+export const Actions = defineAction(
+  "INCR",
+  "DECR",
+);
 
 const increase =
   filterData(Actions.INCR)
@@ -15,7 +15,7 @@ const decrease =
   filterData(Actions.DECR)
     .map(num => -num)
 
- const count =
+export const count =
   Observable
     .merge(increase, decrease)
     .scan((acc, item) => acc + item)
