@@ -1,9 +1,9 @@
 import React from 'react';
 
-import {observer} from '../halo';
+import {subscribe} from '../halo';
 import {count, decreaseCount, increaseCount} from './counterStore';
 
-@observer({count, decreaseCount, increaseCount})
+@subscribe({count, decreaseCount, increaseCount})
 export default class Counter extends React.Component {
   render() {
     const {count, increaseCount, decreaseCount} = this.props;

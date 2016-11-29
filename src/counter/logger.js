@@ -1,5 +1,5 @@
 import dispatcher from './dispatcher';
 
-const {actionsStream} = dispatcher;
+const {actionStream} = dispatcher;
 
-export default actionsStream.do((action) => console.log(action))
+export default actionStream.do((action) => console.log(action))

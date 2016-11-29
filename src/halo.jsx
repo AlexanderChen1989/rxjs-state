@@ -16,7 +16,7 @@ export const combine = (obj) => {
   })
 }
 
-export const observer = (store) => (WrappedComponent) => {
+export const subscribe = (store) => (WrappedComponent) => {
   store = combine(store)
   return class InnerComponent extends React.Component {
     constructor(props) {
@@ -73,7 +73,7 @@ export class Dispatcher {
     this.filterData = this.filterData.bind(this)
   }
 
-  get actionsStream() {
+  get actionStream() {
     return this._actionsStream
   }
 
