@@ -5,17 +5,18 @@ import getPayload from './dispatcher'
 import {getAction} from './dispatcher'
 
 
-const history = useQueries(createHistory)()
+const history = useQueries(createHistory)();
+
 
 const combineLocations = (location, route) => {
   return {location, route}
-}
+};
 
 const checkIfDifferentLocation = (location, route) => {
   return !route ||
     location.pathname !== route.path ||
     location.search !== route.search
-}
+};
 
 const pushHistory =
   getPayload(Actions.ROUTE_CHANGED)
@@ -26,7 +27,7 @@ const pushHistory =
         history.push({ pathname: route.path,
           query: route.query })
       }
-    })
+    });
 
 const notifyHistoryChange =
   Observable.fromEventPattern(history.listen)
@@ -38,11 +39,11 @@ const notifyHistoryChange =
       dispatch(Actions.ROUTE_CHANGED, {path: location.pathname,
         query: location.query,
         search: location.search})
-    })
+    });
 
 const logger =
   getAction()
-    .do((next) => console.log(next))
+    .do((next) => console.log(next));
 
 
 export default Observable.merge(pushHistory, notifyHistoryChange) //, logger)
